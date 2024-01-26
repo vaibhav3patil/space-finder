@@ -10,3 +10,6 @@ content-Type: application/json
     "location":"Paris"
 }
 ###
+
+GET https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=234
+###
