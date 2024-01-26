@@ -3,6 +3,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda
 import { postSpaces } from "./PostSpaces";
 import { getSpaces } from "./GetSpaces";
 import { updateSpace } from "./UpdateSpace";
+import { deleteSpace } from "./DeleteSpace";
   
 process.env.TABLE_NAME = "SpaceTable-02e50c715a33";
 
@@ -22,8 +23,12 @@ async function handler(event:APIGatewayProxyEvent, context: Context): Promise<AP
                 return postResponse;
             case 'PUT':
                 const putResponse = await updateSpace(event, ddbClient);
-                console.log(putResponse)
-                return putResponse;                
+                console.log(putResponse);
+                return putResponse;
+            case 'DELETE':
+                const deleteResponse = await deleteSpace(event, ddbClient);
+                console.log(deleteResponse);
+                return deleteResponse;                           
             default:
                 break;
         }
