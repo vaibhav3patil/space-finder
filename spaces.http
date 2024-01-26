@@ -13,3 +13,11 @@ content-Type: application/json
 
 GET https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=
 ###
+
+PUT https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=1212
+content-Type: application/json
+
+{
+    "location":"Paris2"
+}
+###
