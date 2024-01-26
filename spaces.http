@@ -1,4 +1,7 @@
 
 
-GET https://bpd4h9rpxg.execute-api.ap-south-1.amazonaws.com/prod/spaces
+GET https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces
+###
+
+POST https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces
 ###
