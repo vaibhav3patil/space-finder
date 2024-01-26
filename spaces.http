@@ -4,4 +4,9 @@ GET https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces
 ###
 
 POST https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces
+content-Type: application/json
+
+{
+    "location":"Paris"
+}
 ###

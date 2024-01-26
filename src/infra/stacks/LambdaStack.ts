@@ -26,7 +26,13 @@ export class LambdaStack extends Stack {
             }
         });
 
-
+        spacesLambda.addToRolePolicy(new PolicyStatement({
+            effect: Effect.ALLOW,
+            resources: [props.spacesTable.tableArn],
+            actions:[
+                'dynamodb:PutItem'
+            ]
+        }))
         this.spacesLambdaIntegration = new LambdaIntegration(spacesLambda);
         
     }
