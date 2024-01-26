@@ -7,21 +7,19 @@ POST https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces
 content-Type: application/json
 
 {
-    "location":"Paris"
+    "location":"Dublin",
+    "name":"Best Location 2"
 }
 ###
 
-GET https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=123
-###
-
-DELETE https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=124
+DELETE https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=894b2cd4-a937-43b2-a3c5-06848ca23b8a
 ###
 
 
-PUT https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=1212
+PUT https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=894b2cd4-a937-43b2-a3c5-06848ca23b8a
 content-Type: application/json
 
 {
-    "location":"Paris2"
+    "name":"Best location 1"
 }
 ###
