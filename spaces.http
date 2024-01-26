@@ -11,5 +11,5 @@ content-Type: application/json
 }
 ###
 
-GET https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=234
+GET https://sr9r14aj77.execute-api.ap-south-1.amazonaws.com/prod/spaces?id=
 ###
