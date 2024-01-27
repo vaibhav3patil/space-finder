@@ -1,5 +1,6 @@
 import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
-import { CfnIdentityPool, CfnUserPoolGroup, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, CfnUserPoolGroup, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { FederatedPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 export class AuthStack extends Stack {
@@ -7,6 +8,9 @@ export class AuthStack extends Stack {
     public userPool: UserPool;
     private userPoolClient: UserPoolClient;
     private identityPool: CfnIdentityPool;
+    private authenticatedRole: Role;
+    private unAuthenticatedRole: Role;
+    private adminRole: Role;
     
     constructor(scopes: Construct, id: string, props? : StackProps){
         super(scopes, id, props);
@@ -14,6 +18,8 @@ export class AuthStack extends Stack {
         this.createUserPoolClient();
         this.createAdminGroup();
         this.createIdentityPool();
+        this.createRoles();
+        this.attachedRole();
     }
 
     private createUserPool() {
@@ -63,6 +69,64 @@ export class AuthStack extends Stack {
 
         new CfnOutput(this, 'SpaceIdentityPoolId', {
             value: this.identityPool.ref
+        })
+    }
+
+    private createRoles() {
+        this.authenticatedRole = new Role(this, 'CognitoDefaultAuthenticatedRole',{
+            assumedBy: new FederatedPrincipal('cognito-identity.amazonaws.com', {
+                StringEquals:{
+                    'cognito-identity.amazonaws.com:aud': this.identityPool.ref
+                },
+                'ForAnyValue:StringLike': {
+                    'cognito-deintity.amazonaws.con:amr': 'authenticated'
+                }
+            },
+                'sts:AssumeRoleWithWebIdentity'
+            )
+        })
+
+        this.unAuthenticatedRole = new Role(this, 'CognitoDefaultUnauthenticatedRole',{
+            assumedBy: new FederatedPrincipal('cognito-identity.amazonaws.com', {
+                StringEquals:{
+                    'cognito-identity.amazonaws.com:aud': this.identityPool.ref
+                },
+                'ForAnyValue:StringLike': {
+                    'cognito-deintity.amazonaws.con:amr': 'unauthenticated'
+                }
+            },
+                'sts:AssumeRoleWithWebIdentity'
+            )
+        })
+
+        this.adminRole = new Role(this, 'CognitoAdminRole',{
+            assumedBy: new FederatedPrincipal('cognito-identity.amazonaws.com', {
+                StringEquals:{
+                    'cognito-identity.amazonaws.com:aud': this.identityPool.ref
+                },
+                'ForAnyValue:StringLike': {
+                    'cognito-deintity.amazonaws.con:amr': 'authenticated'
+                }
+            },
+                'sts:AssumeRoleWithWebIdentity'
+            )
+        })
+    }
+
+    private attachedRole() {
+        new CfnIdentityPoolRoleAttachment(this, 'RoleAttachment', {
+            identityPoolId: this.identityPool.ref,
+            roles: {
+                'authenticated': this.authenticatedRole.roleArn,
+                'unauthenticated': this.unAuthenticatedRole.roleArn
+            },
+            roleMappings: {
+                adminsMapping: {
+                    type: 'Token',
+                    ambiguousRoleResolution: 'AuthenticatedRole',
+                    identityProvider: `${this.userPool.userPoolProviderName}:${this.userPoolClient.userPoolClientId}`
+                }
+            }
         })
     }
 }
