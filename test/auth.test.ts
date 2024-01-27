@@ -7,7 +7,7 @@ async function testAuth() {
         'vaibhav',
         '***********'
     )
-    console.log(loginResult);
+    console.log(loginResult.getSignInUserSession().getIdToken().getJwtToken());
 }
 
 testAuth();
