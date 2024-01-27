@@ -1,6 +1,6 @@
 import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, CfnUserPoolGroup, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { FederatedPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import { Effect, FederatedPrincipal, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 export class AuthStack extends Stack {
@@ -16,10 +16,10 @@ export class AuthStack extends Stack {
         super(scopes, id, props);
         this.createUserPool();
         this.createUserPoolClient();
-        this.createAdminGroup();
         this.createIdentityPool();
         this.createRoles();
         this.attachedRole();
+        this.createAdminGroup();
     }
 
     private createUserPool() {
@@ -54,7 +54,8 @@ export class AuthStack extends Stack {
     private createAdminGroup() {
         new CfnUserPoolGroup(this, 'SpaceAdmins', {
             userPoolId: this.userPool.userPoolId,
-            groupName: 'admins'
+            groupName: 'admins',
+            roleArn: this.adminRole.roleArn
         })
     }
 
@@ -79,7 +80,7 @@ export class AuthStack extends Stack {
                     'cognito-identity.amazonaws.com:aud': this.identityPool.ref
                 },
                 'ForAnyValue:StringLike': {
-                    'cognito-deintity.amazonaws.con:amr': 'authenticated'
+                    'cognito-identity.amazonaws.con:amr': 'authenticated'
                 }
             },
                 'sts:AssumeRoleWithWebIdentity'
@@ -92,7 +93,7 @@ export class AuthStack extends Stack {
                     'cognito-identity.amazonaws.com:aud': this.identityPool.ref
                 },
                 'ForAnyValue:StringLike': {
-                    'cognito-deintity.amazonaws.con:amr': 'unauthenticated'
+                    'cognito-identity.amazonaws.con:amr': 'unauthenticated'
                 }
             },
                 'sts:AssumeRoleWithWebIdentity'
@@ -105,12 +106,20 @@ export class AuthStack extends Stack {
                     'cognito-identity.amazonaws.com:aud': this.identityPool.ref
                 },
                 'ForAnyValue:StringLike': {
-                    'cognito-deintity.amazonaws.con:amr': 'authenticated'
+                    'cognito-identity.amazonaws.con:amr': 'authenticated'
                 }
             },
                 'sts:AssumeRoleWithWebIdentity'
             )
         })
+
+        this.adminRole.addToPolicy(new PolicyStatement({
+            effect:Effect.ALLOW,
+            actions:[
+                's3:ListAllMyBuckets'
+            ],
+            resources: ['*']
+        }))
     }
 
     private attachedRole() {
