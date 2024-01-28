@@ -5,6 +5,7 @@ import { getSpaces } from "./GetSpaces";
 import { updateSpace } from "./UpdateSpace";
 import { deleteSpace } from "./DeleteSpace";
 import { JsonError, MissingFieldError } from "../shared/Validator";
+import { addCoresHeadher } from "../shared/Utils";
   
 process.env.TABLE_NAME = "SpaceTable-02e50c715a33";
 
@@ -12,24 +13,25 @@ const ddbClient = new DynamoDBClient({})
 
 async function handler(event:APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult>{
 
-    let message: string;
+    let repsonse: APIGatewayProxyResult;
     try {
         switch (event.httpMethod) {
             case 'GET':
                 const getResponse = await getSpaces(event, ddbClient);
-                console.log(getResponse)
-                return getResponse;
+                repsonse = getResponse
+                break;
             case 'POST':
                 const postResponse = await postSpaces(event, ddbClient);
-                return postResponse;
+                repsonse =  postResponse;
+                break;
             case 'PUT':
                 const putResponse = await updateSpace(event, ddbClient);
-                console.log(putResponse);
-                return putResponse;
+                repsonse =  putResponse;
+                break;
             case 'DELETE':
                 const deleteResponse = await deleteSpace(event, ddbClient);
-                console.log(deleteResponse);
-                return deleteResponse;                           
+                repsonse =  deleteResponse;   
+                break;                        
             default:
                 break;
         }
@@ -52,13 +54,7 @@ async function handler(event:APIGatewayProxyEvent, context: Context): Promise<AP
         }
     }
 
-   
-
-    const repsonse : APIGatewayProxyResult = {
-        statusCode: 200,
-        body: JSON.stringify(message)
-    }
-    
+    addCoresHeadher(repsonse);
     return repsonse;
 }
 
